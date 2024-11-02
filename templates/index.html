@@ -128,6 +128,120 @@
             </div>
         </div>
     </section>
+    <div class="container py-5">
+        <h2 class="text-center mb-5">Customer Feedback</h2>
+    
+        <div class="feedback-section mb-5">
+            <h3 class="h5 mb-4">What Our Customers Are Saying:</h3>
+            <div class="list-group">
+                {% for comment in comments %}
+                    <div class="list-group-item my-3 border rounded shadow-sm bg-white">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="mb-1">{{ comment.first_name }} {{ comment.last_name }}</h5>
+                            <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
+                        </div>
+                        <p class="mb-1">{{ comment.text }}</p>
+                        <div class="text-warning">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= comment.rating %}
+                                    <i class="fa fa-star"></i>
+                                {% else %}
+                                    <i class="fa fa-star-o"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="list-group-item text-muted">No feedback yet.</div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <h3 class="h5 mb-3">Leave Your Feedback</h3>
+        <form method="post" class="p-4 border rounded shadow-sm bg-light">
+            {% csrf_token %}
+            <div class="form-group mb-3">
+                <label for="first_name">First Name</label>
+                <input type="text" name="first_name" class="form-control" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="last_name">Last Name</label>
+                <input type="text" name="last_name" class="form-control" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="text">Feedback</label>
+                <textarea name="text" class="form-control" rows="4" required></textarea>
+            </div>
+            <div class="form-group mb-3">
+                <label for="rating">Rating</label>
+                <select name="rating" class="form-control" required>
+                    <option value="" disabled selected>Select a rating</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Submit</button>
+        </form>
+    </div>
+<style>
+    body {
+    background-color: #f8f9fa;
+}
+
+
+h2, h3 {
+    color: #343a40;
+    text-align: center;
+}
+
+.list-group-item {
+    background-color: #ffffff;
+    transition: background-color 0.3s;
+}
+
+.list-group-item:hover {
+    background-color: #e2e6ea;
+}
+
+.feedback-section {
+    margin-bottom: 30px;
+}
+
+input[type="text"],
+textarea {
+    border-radius: 25px; 
+}
+
+.rating {
+    display: flex;
+    justify-content: space-between;
+    width: 200px;  
+}
+
+.rating input {
+    display: none;  
+}
+
+.rating label {
+    font-size: 1.5em;
+    color: #ddd;  
+    cursor: pointer;
+}
+
+.rating input:checked ~ label {
+    color: #f39c12;  
+}
+
+.rating label:hover,
+.rating label:hover ~ label {
+    color: #f39c12;  
+}
+
+
+</style>    
     <!-- End Featured Product -->
 {% endblock content %}
 {% block scripts%}

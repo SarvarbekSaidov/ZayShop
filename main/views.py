@@ -1,9 +1,24 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Customer, Product, Category
+from .models import Customer, Product, Category, Comment
+from .forms import CommentForm  
+from django.contrib import messages   
 
 def index(request):
-    return render(request, 'index.html')
+    comments = Comment.objects.all()   
+    form = CommentForm()
 
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            form.save()   
+            messages.success(request, 'Your comment has been successfully added!')
+            return redirect('main:index')   
+    context = {
+        'comments': comments,
+        'form': form,
+    }
+    return render(request, 'index.html', context)
 
 def about(request):
     return render(request, 'about.html')
@@ -12,7 +27,13 @@ def contact(request):
     return render(request, 'contact.html')
 
 def shop(request):
-    return render(request, 'shop.html')
+    categories = Category.objects.all()
+    products = Product.objects.all()   
+    context = {
+        'categories': categories,
+        'products': products,
+    }
+    return render(request, 'main/shop.html', context)
 
 def shop_single(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -31,7 +52,7 @@ def add_product(request):
         brand = request.POST['brand']
         description = request.POST['description']
         available_color = request.POST['available_color']
-        specifications = request.POST['specification']   
+        specifications = request.POST['specification']
         size = request.POST['size']
         quantity = request.POST['quantity']
         price = request.POST['price']
@@ -40,14 +61,14 @@ def add_product(request):
         Product.objects.create(
             brand=brand,
             description=description,
-            available_colors=available_color, 
+            available_colors=available_color,
             specifications=specifications,
             size=size,
             quantity=quantity,
             price=price,
             rating=rating
         )
-        return redirect('main:shop')   
+        return redirect('main:shop')
 
     return render(request, 'products/add_product.html')
 
@@ -66,23 +87,25 @@ def add_customer(request):
             phone=phone,
             address=address
         )
-        return redirect('main:customer_list')   
+        return redirect('main:customer_list')
 
     return render(request, 'customers/add_customer.html')
+
+from django.shortcuts import render
+from .models import Category, Product
 
 def category_list(request):
     gender_categories = Category.objects.filter(type='Gender')
     sale_categories = Category.objects.filter(type='Sale')
     product_categories = Category.objects.filter(type='Product')
     selected_subtype = request.GET.get('subtype')
-
     products = Product.objects.all()
     if selected_subtype:
-        products = products.filter(categories__subtype=selected_subtype)
+        products = products.filter(category__subtype=selected_subtype)
 
     for product in products:
-        product.available_colors_list = product.available_colors.split(',')
-
+        product.available_colors_list = product.available_colors.all() 
+        product.images_list = product.images.all()  
     context = {
         'gender_categories': gender_categories,
         'sale_categories': sale_categories,
@@ -103,11 +126,24 @@ def filter_products(request, category_id):
     
     return render(request, 'filtered_products.html', context)
 
+
 def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    
+    product = get_object_or_404(Product, pk=product_id)
+    comments = product.comments.all()
+    form = CommentForm()
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.product = product
+            comment.user = request.user
+            comment.save()
+            return redirect('main:product_detail', product_id=product_id)
+
     context = {
-        'product': product
+        'product': product,
+        'comments': comments,
+        'form': form,
     }
-    
-    return render(request, 'shop-single.html', context)   
+    return render(request, 'shop-single.html', context)
+

@@ -18,68 +18,48 @@
     <!-- Start Content -->
     <div class="container py-5">
         <div class="row">
-
-   <div class="col-lg-3">
-    <h1 class="h2 pb-4">Categories</h1>
-    <ul class="list-unstyled templatemo-accordion">
-
-        <!-- Gender Categories -->
-        <li class="pb-3">
-            <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
-                Gender
-                <i class="fa fa-fw fa-chevron-circle-down mt-1"></i>
-            </a>
-            <ul class="collapse show list-unstyled pl-3">
-                {% for category in gender_categories %}
-                    <li>
-                        <a class="text-decoration-none" href="?subtype={{ category.subtype }}">{{ category.name }}</a>
+            <div class="col-lg-3">
+                <h1 class="h2 pb-4">Categories</h1>
+                <ul class="list-unstyled templatemo-accordion">
+    
+                    <!-- Gender Categories -->
+                    <li class="pb-3">
+                        <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
+                            Gender
+                            <i class="fa fa-fw fa-chevron-circle-down mt-1"></i>
+                        </a>
+                        <ul class="collapse show list-unstyled pl-3">
+                            {% for category in gender_categories %}
+                                <li>
+                                    <a class="text-decoration-none" href="?subtype={{ category.subtype }}">{{ category.name }}</a>
+                                </li>
+                            {% empty %}
+                                <li><a class="text-decoration-none" href="#">No categories available</a></li>
+                            {% endfor %}
+                        </ul>
                     </li>
-                {% empty %}
-                    <li><a class="text-decoration-none" href="#">No categories available</a></li>
-                {% endfor %}
-            </ul>
-        </li>
-
-        <!-- Sale Categories -->
-        <li class="pb-3">
-            <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
-                Sale
-                <i class="pull-right fa fa-fw fa-chevron-circle-down mt-1"></i>
-            </a>
-            <ul class="collapse list-unstyled pl-3">
-                {% for category in sale_categories %}
-                    <li>
-                        <a class="text-decoration-none" href="?subtype={{ category.subtype }}">{{ category.name }}</a>
+    
+    
+                    <!-- Product Categories -->
+                    <li class="pb-3">
+                        <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
+                            Product
+                            <i class="pull-right fa fa-fw fa-chevron-circle-down mt-1"></i>
+                        </a>
+                        <ul class="collapse list-unstyled pl-3">
+                            {% for category in product_categories %}
+                                <li>
+                                    <a class="text-decoration-none" href="?subtype={{ category.subtype }}">{{ category.name }}</a>
+                                </li>
+                            {% empty %}
+                                <li><a class="text-decoration-none" href="#">No categories available</a></li>
+                            {% endfor %}
+                        </ul>
                     </li>
-                {% empty %}
-                    <li><a class="text-decoration-none" href="#">No categories available</a></li>
-                {% endfor %}
-            </ul>
-        </li>
-
-        <!-- Product Categories -->
-        <li class="pb-3">
-            <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
-                Product
-                <i class="pull-right fa fa-fw fa-chevron-circle-down mt-1"></i>
-            </a>
-            <ul class="collapse list-unstyled pl-3">
-                {% for category in product_categories %}
-                    <li>
-                        <a class="text-decoration-none" href="?subtype={{ category.subtype }}">{{ category.name }}</a>
-                    </li>
-                {% empty %}
-                    <li><a class="text-decoration-none" href="#">No categories available</a></li>
-                {% endfor %}
-            </ul>
-        </li>
-
-    </ul>
-</div>
-
-
-            
-
+    
+                </ul>
+            </div>
+    
             <div class="col-lg-9">
                 <div class="row">
                     <div class="col-md-6">
@@ -147,6 +127,10 @@
                     </div>
                     {% endfor %}
                 </div>
+            </div>
+        </div>
+    </div>
+    
                 
     <!-- End Content -->
 
