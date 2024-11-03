@@ -46,7 +46,7 @@ class Category(models.Model):
         ('Product', 'Product'),
     ]
     SUBTYPE_CHOICES = {
-        'Gender': [('Men', 'Men'), ('Women', 'Women')],
+        # 'Gender': [('Men', 'Men'), ('Women', 'Women')],
         'Sale': [('Sport', 'Sport'), ('Luxury', 'Luxury')],
         'Product': [('Clothes', 'Clothes'), ('Gadgets', 'Gadgets')],
     }
