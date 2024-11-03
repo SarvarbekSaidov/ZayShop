@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Customer, Product, Category, Comment
-from .forms import CommentForm  
+from .forms import CommentForm , ProductForm, CustomerForm
 from django.contrib import messages   
 
 def index(request):
@@ -14,6 +14,7 @@ def index(request):
             form.save()   
             messages.success(request, 'Your comment has been successfully added!')
             return redirect('main:index')   
+
     context = {
         'comments': comments,
         'form': form,
@@ -29,11 +30,16 @@ def contact(request):
 def shop(request):
     categories = Category.objects.all()
     products = Product.objects.all()   
+    selected_gender = request.GET.get('gender')
+    if selected_gender:
+        products = products.filter(gender=selected_gender)   
+
     context = {
         'categories': categories,
         'products': products,
     }
-    return render(request, 'main/shop.html', context)
+    return render(request, 'shop.html', context)
+
 
 def shop_single(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -49,50 +55,25 @@ def customer_list(request):
 
 def add_product(request):
     if request.method == 'POST':
-        brand = request.POST['brand']
-        description = request.POST['description']
-        available_color = request.POST['available_color']
-        specifications = request.POST['specification']
-        size = request.POST['size']
-        quantity = request.POST['quantity']
-        price = request.POST['price']
-        rating = request.POST['rating']
-        
-        Product.objects.create(
-            brand=brand,
-            description=description,
-            available_colors=available_color,
-            specifications=specifications,
-            size=size,
-            quantity=quantity,
-            price=price,
-            rating=rating
-        )
-        return redirect('main:shop')
+        form = ProductForm(request.POST)   
+        if form.is_valid():
+            form.save()
+            return redirect('main:shop')
+    else:
+        form = ProductForm() 
 
-    return render(request, 'products/add_product.html')
+    return render(request, 'products/add_product.html', {'form': form})
 
 def add_customer(request):
     if request.method == 'POST':
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        email = request.POST['email']
-        phone = request.POST.get('phone', '')
-        address = request.POST.get('address', '')
+        form = CustomerForm(request.POST)   
+        if form.is_valid():
+            form.save()
+            return redirect('main:customer_list')
+    else:
+        form = CustomerForm()   
 
-        Customer.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            phone=phone,
-            address=address
-        )
-        return redirect('main:customer_list')
-
-    return render(request, 'customers/add_customer.html')
-
-from django.shortcuts import render
-from .models import Category, Product
+    return render(request, 'customers/add_customer.html', {'form': form})
 
 def category_list(request):
     gender_categories = Category.objects.filter(type='Gender')
@@ -100,12 +81,15 @@ def category_list(request):
     product_categories = Category.objects.filter(type='Product')
     selected_subtype = request.GET.get('subtype')
     products = Product.objects.all()
+
+    products = Product.objects.all()
     if selected_subtype:
         products = products.filter(category__subtype=selected_subtype)
 
     for product in products:
-        product.available_colors_list = product.available_colors.all() 
-        product.images_list = product.images.all()  
+        product.available_colors_list = product.available_colors.all()
+        product.images_list = product.images.all()   
+
     context = {
         'gender_categories': gender_categories,
         'sale_categories': sale_categories,
@@ -116,6 +100,7 @@ def category_list(request):
 
     return render(request, 'shop.html', context)
 
+
 def filter_products(request, category_id):
     products = Product.objects.filter(category__id=category_id)
     
@@ -124,26 +109,38 @@ def filter_products(request, category_id):
         'category_id': category_id,
     }
     
-    return render(request, 'filtered_products.html', context)
+    return render(request, 'shop.html', context)
 
-
+def filter_products_by_gender(request, gender):
+    products = Product.objects.filter(gender=gender)
+    context = {
+        'products': products,
+        'gender': gender,
+    }
+    return render(request, 'shop.html', context)
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    comments = product.comments.all()
+    comments = product.comments.all()   
     form = CommentForm()
+
+    specifications_list = product.specifications.split(',') if product.specifications else []
+    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]  
+
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.product = product
-            comment.user = request.user
+            comment.product = product 
             comment.save()
+            messages.success(request, 'Your comment has been added.')
             return redirect('main:product_detail', product_id=product_id)
 
     context = {
         'product': product,
         'comments': comments,
         'form': form,
+        'specifications_list': specifications_list,
+        'related_products': related_products,   
     }
     return render(request, 'shop-single.html', context)
 

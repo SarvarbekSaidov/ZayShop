@@ -1,9 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
-# Create your models here.
-
 class Color(models.Model):
     name = models.CharField(max_length=50)
 
@@ -46,7 +43,6 @@ class Category(models.Model):
         ('Product', 'Product'),
     ]
     SUBTYPE_CHOICES = {
-        # 'Gender': [('Men', 'Men'), ('Women', 'Women')],
         'Sale': [('Sport', 'Sport'), ('Luxury', 'Luxury')],
         'Product': [('Clothes', 'Clothes'), ('Gadgets', 'Gadgets')],
     }
@@ -87,14 +83,15 @@ class Product(models.Model):
     rating = models.IntegerField(choices=RATING_CHOICES)
     brand = models.CharField(max_length=100)
     description = models.TextField()
-    available_colors = models.ManyToManyField(Color, blank=True, verbose_name="Available Colors")   
     specifications = models.CharField(max_length=5000, null=True, blank=True)
+    available_colors = models.ManyToManyField(Color, blank=True, verbose_name="Available Colors")   
     sizes = models.ManyToManyField(Size, blank=True, verbose_name="Available Sizes")
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     featured_product = models.BooleanField(default=False, verbose_name="Featured Product")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products", null=True)
     gender = models.CharField(max_length=10, choices=[('male', 'Male'), ('female', 'Female'), ('unisex', 'Unisex')], null=True, blank=True)
+    images = models.ManyToManyField('ProductImage', related_name='products', blank=True)
 
     class Meta:
         verbose_name = "Product"
@@ -106,23 +103,20 @@ class Product(models.Model):
     def get_gender_category(self):
         return self.category.subtype if self.category and self.category.type == 'Gender' else "Unspecified"
 
-
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_images')   
     image = models.ImageField(upload_to='product_images/', blank=True, null=True, default='default.jpg')
 
     def __str__(self):
         return f"Image for {self.product.name} (ID: {self.pk})"
 
-from django.db import models
-
 class Comment(models.Model):
-    first_name = models.CharField(max_length=100,null=True)   
-    last_name = models.CharField(max_length=100,null=True)    
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments',null=True)   
+    first_name = models.CharField(max_length=100, null=True)
+    last_name = models.CharField(max_length=100, null=True)
     text = models.TextField()
-    rating = models.IntegerField(default=0)  
+    rating = models.IntegerField(default=0, choices=[(i, f"{i} Star") for i in range(6)])
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}: {self.text[:20]}...' 
-
+        return f'{self.first_name} {self.last_name}: {self.text[:20]}...'

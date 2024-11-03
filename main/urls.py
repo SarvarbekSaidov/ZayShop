@@ -3,15 +3,14 @@ from .views import (
     index,
     about,
     contact,
-    shop,
-    shop_single,
-    product_list,
-    add_product,
-    customer_list,
-    add_customer,
     category_list,
-    filter_products,
+    shop_single,
     product_detail,
+    customer_list,
+    add_product,
+    add_customer,
+    filter_products,
+    filter_products_by_gender,
 )
 
 app_name = 'main'
@@ -26,7 +25,6 @@ urlpatterns = [
     path('products/add/', add_product, name='add_product'),
     path('customers/', customer_list, name='customer_list'),
     path('customers/add/', add_customer, name='add_customer'),
-    path('categories/', category_list, name='category_list'),
     path('filter/<int:category_id>/', filter_products, name='filter_products'),
-    path('product/<int:product_id>/', product_detail, name='product_detail'),   
+    path('shop/<str:gender>/', filter_products_by_gender, name='filter_products_by_gender'),
 ]

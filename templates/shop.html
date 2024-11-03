@@ -39,7 +39,6 @@
                         </ul>
                     </li>
     
-    
                     <!-- Product Categories -->
                     <li class="pb-3">
                         <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
@@ -65,16 +64,17 @@
                     <div class="col-md-6">
                         <ul class="list-inline shop-top-menu pb-3 pt-1">
                             <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none mr-3" href="#">All</a>
+                                <a class="h3 text-dark text-decoration-none mr-3" href="{% url 'main:shop' %}">All</a>
                             </li>
                             <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none mr-3" href="#">Men's</a>
+                                <a class="h3 text-dark text-decoration-none mr-3" href="{% url 'main:filter_products_by_gender' 'male' %}">Men's</a>
                             </li>
                             <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none" href="#">Women's</a>
+                                <a class="h3 text-dark text-decoration-none" href="{% url 'main:filter_products_by_gender' 'female' %}">Women's</a>
                             </li>
                         </ul>
                     </div>
+    
                     <div class="col-md-6 pb-4">
                         <div class="d-flex">
                             <select class="form-control">
@@ -90,8 +90,12 @@
                     <div class="col-md-4">
                         <div class="card mb-4 product-wap rounded-0">
                             <div class="card rounded-0">
-                                <!-- Display the product image -->
-                                <img class="card-img rounded-0 img-fluid" src="{{ product.image.url }}" alt="{{ product.name }}">
+                                <!-- Display the first product image -->
+                                {% if product.images.all %}
+                                    <img class="card-img rounded-0 img-fluid" src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                                {% else %}
+                                    <img class="card-img rounded-0 img-fluid" src="{{ DEFAULT_IMAGE_URL }}" alt="{{ product.name }}"> <!-- Use a default image if no images available -->
+                                {% endif %}
                                 <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
                                     <ul class="list-unstyled">
                                         <li><a class="btn btn-success text-white" href="{% url 'main:shop_single' product.id %}"><i class="far fa-heart"></i></a></li>
@@ -103,11 +107,15 @@
                             <div class="card-body">
                                 <a href="{% url 'main:shop_single' product.id %}" class="h3 text-decoration-none">{{ product.name }}</a>
                                 <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
-                                    <li>{{ product.available_sizes }}</li>  <!-- Display sizes dynamically if available -->
+                                    <li>{{ product.available_sizes }}</li>
                                     <li class="pt-2">
+                                        {% if product.available_colors_list %}
                                         {% for color in product.available_colors_list %}
                                             <span class="product-color-dot color-dot-{{ color|lower }} float-left rounded-circle ml-1"></span>
                                         {% endfor %}
+                                        {% else %}
+                                        <p>No colors available</p>
+                                        {% endif %}
                                     </li>
                                 </ul>
                                 <ul class="list-unstyled d-flex justify-content-center mb-1">
@@ -125,11 +133,14 @@
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
+                {% endfor %}
+                
+                
                 </div>
             </div>
         </div>
     </div>
+    
     
                 
     <!-- End Content -->
