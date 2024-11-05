@@ -1,124 +1,102 @@
 {% extends 'base.html' %}
 {% block title %}Shop{% endblock %}
 {% load static %}
-    <!-- Start Top Nav -->
-    <!-- Close Top Nav -->
 
+<!-- Header -->
+{% include 'components/header.html' %}
+<!-- Modal -->
+{% include 'components/modal.html' %}
 
-    <!-- Header -->
-    {% include 'components/header.html' %}
-    <!-- Close Header -->
-
-    <!-- Modal -->
-    {% include 'components/modal.html' %}
-    
-
-
-{% block content%}
-    <!-- Start Content -->
-    <div class="container py-5">
-        <div class="row">
-            <div class="col-lg-3">
-                <h1 class="h2 pb-4">Categories</h1>
-                <ul class="list-unstyled templatemo-accordion">
-    
-                    <!-- Gender Categories -->
-                    <li class="pb-3">
-                        <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
-                            Gender
-                            <i class="fa fa-fw fa-chevron-circle-down mt-1"></i>
-                        </a>
-                        <ul class="collapse show list-unstyled pl-3">
-                            {% for category in gender_categories %}
-                                <li>
-                                    <a class="text-decoration-none" href="?subtype={{ category.subtype }}">{{ category.name }}</a>
-                                </li>
-                            {% empty %}
-                                <li><a class="text-decoration-none" href="#">No categories available</a></li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-    
-                    <!-- Product Categories -->
-                    <li class="pb-3">
-                        <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
-                            Product
-                            <i class="pull-right fa fa-fw fa-chevron-circle-down mt-1"></i>
-                        </a>
-                        <ul class="collapse list-unstyled pl-3">
-                            {% for category in product_categories %}
-                                <li>
-                                    <a class="text-decoration-none" href="?subtype={{ category.subtype }}">{{ category.name }}</a>
-                                </li>
-                            {% empty %}
-                                <li><a class="text-decoration-none" href="#">No categories available</a></li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-    
-                </ul>
-            </div>
-    
-            <div class="col-lg-9">
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-inline shop-top-menu pb-3 pt-1">
-                            <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none mr-3" href="{% url 'main:shop' %}">All</a>
+{% block content %}
+<!-- Start Content -->
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar for Categories -->
+        <div class="col-lg-3 mb-4">
+            <h2 class="h4 pb-4 text-uppercase font-weight-bold">Categories</h2>
+            <ul class="list-unstyled templatemo-accordion">
+                <li class="pb-3">
+                    <a class="collapsed d-flex justify-content-between h4 text-dark text-decoration-none" href="#">
+                        Products
+                        <i class="fa fa-chevron-circle-down mt-1 text-muted"></i>
+                    </a>
+                    <ul class="collapse list-unstyled pl-3">
+                        {% for category in product_categories %}
+                            <li>
+                                <a class="text-decoration-none text-secondary" href="?subtype={{ category.subtype }}">{{ category.name }}</a>
                             </li>
-                            <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none mr-3" href="{% url 'main:filter_products_by_gender' 'male' %}">Men's</a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none" href="{% url 'main:filter_products_by_gender' 'female' %}">Women's</a>
-                            </li>
-                        </ul>
-                    </div>
-    
-                    <div class="col-md-6 pb-4">
-                        <div class="d-flex">
-                            <select class="form-control">
-                                <option>Featured</option>
-                                <option>A to Z</option>
-                                <option>Item</option>
-                            </select>
-                        </div>
-                    </div>
+                        {% empty %}
+                            <li><a class="text-decoration-none text-muted" href="#">No categories available</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content Area for Products -->
+        <div class="col-lg-9">
+            <div class="row mb-4 align-items-center">
+                <div class="col-md-6">
+                    <ul class="list-inline shop-top-menu pb-3 pt-1">
+                        <li class="list-inline-item"><a class="h5 text-dark text-decoration-none mr-3" href="{% url 'main:shop' %}">All</a></li>
+                        <li class="list-inline-item"><a class="h5 text-dark text-decoration-none mr-3" href="{% url 'main:filter_products_by_gender' 'male' %}">Men's</a></li>
+                        <li class="list-inline-item"><a class="h5 text-dark text-decoration-none" href="{% url 'main:filter_products_by_gender' 'female' %}">Women's</a></li>
+                    </ul>
                 </div>
-                <div class="row">
-                    {% for product in products %}
-                    <div class="col-md-4">
-                        <div class="card mb-4 product-wap rounded-0">
-                            <div class="card rounded-0">
-                                <!-- Display the first product image -->
+                <div class="col-md-6">
+                    <form method="get" action="{% url 'main:shop' %}" id="sortForm" class="d-flex justify-content-end">
+                        <input type="hidden" name="subtype" value="{{ selected_subtype|default:'' }}">
+                        <select name="sort" class="form-control rounded mr-2" onchange="document.getElementById('sortForm').submit();">
+                            <option value="" {% if not sort_option %}selected{% endif %}>Sort by</option>
+                            <option value="featured" {% if sort_option == 'featured' %}selected{% endif %}>Featured</option>
+                            <option value="name" {% if sort_option == 'name' %}selected{% endif %}>A to Z</option>
+                            <option value="price" {% if sort_option == 'price' %}selected{% endif %}>Price</option>
+                        </select>
+                        <div class="input-group">
+                            <input type="text" name="q" class="form-control rounded" placeholder="Search ..." value="{{ query|default:'' }}" aria-label="Search">
+                            <button type="submit" class="btn btn-outline-secondary rounded-right">
+                                <i class="fa fa-fw fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Product Display Grid -->
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card product-card shadow-sm rounded-lg border-0 h-100">
+                            <div class="card rounded-lg overflow-hidden position-relative">
                                 {% if product.images.all %}
-                                    <img class="card-img rounded-0 img-fluid" src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                                    <img class="card-img-top img-fluid" src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
                                 {% else %}
-                                    <img class="card-img rounded-0 img-fluid" src="{{ DEFAULT_IMAGE_URL }}" alt="{{ product.name }}"> <!-- Use a default image if no images available -->
+                                    <img class="card-img-top img-fluid" src="{{ DEFAULT_IMAGE_URL }}" alt="{{ product.name }}">
                                 {% endif %}
-                                <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
+                                <div class="card-img-overlay product-overlay d-flex justify-content-center align-items-center">
                                     <ul class="list-unstyled">
-                                        <li><a class="btn btn-success text-white" href="{% url 'main:shop_single' product.id %}"><i class="far fa-heart"></i></a></li>
-                                        <li><a class="btn btn-success text-white mt-2" href="{% url 'main:shop_single' product.id %}"><i class="far fa-eye"></i></a></li>
-                                        <li><a class="btn btn-success text-white mt-2" href="{% url 'main:shop_single' product.id %}"><i class="fas fa-cart-plus"></i></a></li>
+                                        <li><a class="btn btn-outline-light" href="{% url 'main:shop_single' product.id %}"><i class="far fa-heart"></i></a></li>
+                                        <li><a class="btn btn-outline-light mt-2" href="{% url 'main:shop_single' product.id %}"><i class="far fa-eye"></i></a></li>
+                                        <li><a class="btn btn-outline-light mt-2" href="{% url 'main:shop_single' product.id %}"><i class="fas fa-cart-plus"></i></a></li>
                                     </ul>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <a href="{% url 'main:shop_single' product.id %}" class="h3 text-decoration-none">{{ product.name }}</a>
-                                <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
-                                    <li>{{ product.available_sizes }}</li>
+                            <div class="card-body text-center">
+                                <a href="{% url 'main:shop_single' product.id %}" class="h5 text-decoration-none text-dark">{{ product.name }}</a>
+                                <p class="small text-muted">{{ product.brand }}</p>
+                                <ul class="w-100 list-unstyled d-flex justify-content-center mb-0">
                                     <li class="pt-2">
-                                        {% if product.available_colors_list %}
-                                        {% for color in product.available_colors_list %}
-                                            <span class="product-color-dot color-dot-{{ color|lower }} float-left rounded-circle ml-1"></span>
-                                        {% endfor %}
+                                        {% if product.available_colors.all %}
+                                            {% for color in product.available_colors.all %}
+                                                <span class="badge badge-color-{{ color.name|lower }}">{{ color.name }}</span>
+                                            {% endfor %}
                                         {% else %}
-                                        <p>No colors available</p>
+                                            <p class="text-muted"><strong>No colors available</strong></p>
                                         {% endif %}
                                     </li>
                                 </ul>
-                                <ul class="list-unstyled d-flex justify-content-center mb-1">
+                                
+                                <ul class="list-unstyled d-flex justify-content-center mt-2 mb-1">
                                     <li>
                                         {% for i in "12345" %}
                                             {% if forloop.counter <= product.rating %}
@@ -129,140 +107,69 @@
                                         {% endfor %}
                                     </li>
                                 </ul>
-                                <p class="text-center mb-0">${{ product.price }}</p>
+                                <p class="text-dark font-weight-bold">${{ product.price }}</p>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
-                
-                
-                </div>
             </div>
         </div>
     </div>
-    
-    
-                
-    <!-- End Content -->
+</div>
 
-    <!-- Start Brands -->
-    <section class="bg-light py-5">
-        <div class="container my-4">
-            <div class="row text-center py-3">
-                <div class="col-lg-6 m-auto">
-                    <h1 class="h1">Our Brands</h1>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                        Lorem ipsum dolor sit amet.
-                    </p>
-                </div>
-                <div class="col-lg-9 m-auto tempaltemo-carousel">
-                    <div class="row d-flex flex-row">
-                        <!--Controls-->
-                        <div class="col-1 align-self-center">
-                            <a class="h1" href="#multi-item-example" role="button" data-bs-slide="prev">
-                                <i class="text-light fas fa-chevron-left"></i>
-                            </a>
-                        </div>
-                        <!--End Controls-->
+<!-- Additional CSS Styles for Improved Appearance -->
+<style>
+    .product-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border-radius: 15px; /* Round edges for a softer look */
+        border: 1px solid #e0e0e0; /* Subtle border */
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    .product-overlay {
+        background-color: rgba(0, 0, 0, 0.6);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .card:hover .product-overlay {
+        opacity: 1;
+    }
+    .product-overlay .btn-outline-light {
+        color: white;
+        border-color: white;
+    }
+    .product-overlay .btn-outline-light:hover {
+        background-color: white;
+        color: black;
+    }
+    .card-body .text-muted {
+        font-size: 0.85rem;
+    }
+    .badge {
+        margin-right: 5px;
+        padding: 5px 10px;
+        border-radius: 20px; /* Pill-shaped badges */
+        font-size: 0.75rem;
+    }
+    .badge-color-red { background-color: #f8d7da; color: red; } 
+    .badge-color-green { background-color: #d4edda; color: green; } 
+    .badge-color-blue { background-color: #d1ecf1; color: blue; } 
+    .badge-color-yellow { background-color: #fff3cd; color: #856404; } 
+    .badge-color-black { background-color: #e2e3e5; color: black; } 
+    .badge-color-white { background-color: white; color: black; }
+</style>
 
-                        <!--Carousel Wrapper-->
-                        <div class="col">
-                            <div class="carousel slide carousel-multi-item pt-2 pt-md-0" id="multi-item-example" data-bs-ride="carousel">
-                                <!--Slides-->
-                                <div class="carousel-inner product-links-wap" role="listbox">
+{% endblock content %}
 
-                                    <!--First slide-->
-                                    <div class="carousel-item active">
-                                        <div class="row">
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_01.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_02.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_03.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_04.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--End First slide-->
-
-                                    <!--Second slide-->
-                                    <div class="carousel-item">
-                                        <div class="row">
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_01.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_02.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_03.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_04.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--End Second slide-->
-
-                                    <!--Third slide-->
-                                    <div class="carousel-item">
-                                        <div class="row">
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_01.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_02.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_03.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                            <div class="col-3 p-md-5">
-                                                <a href="#"><img class="img-fluid brand-img" src="{% static 'assets/img/brand_04.png'%}" alt="Brand Logo"></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--End Third slide-->
-
-                                </div>
-                                <!--End Slides-->
-                            </div>
-                        </div>
-                        <!--End Carousel Wrapper-->
-
-                        <!--Controls-->
-                        <div class="col-1 align-self-center">
-                            <a class="h1" href="#multi-item-example" role="button" data-bs-slide="next">
-                                <i class="text-light fas fa-chevron-right"></i>
-                            </a>
-                        </div>
-                        <!--End Controls-->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!--End Brands-->
-{% endblock %}
-
-    <!-- Start Footer -->
-    {% include 'components/footer.html' %}
-    <!-- End Footer -->
-
-    <!-- Start Script -->
-    {% block scripts %}
-    <script src="{% static 'assets/js/jquery-1.11.0.min.js'%}"></script>
-    <script src="{% static 'assets/js/jquery-migrate-1.2.1.min.js'%}"></script>
-    <script src="{% static 'assets/js/bootstrap.bundle.min.js'%}"></script>
-    <script src="{% static 'assets/js/templatemo.js'%}"></script>
-    <script src="{% static 'assets/js/custom.js'%}"></script>
-    {% endblock scripts %}
-    End Script
-
-
-    
+<!-- Footer -->
+{% include 'components/footer.html' %}
+<!-- Scripts -->
+{% block scripts %}
+<script src="{% static 'assets/js/jquery-1.11.0.min.js' %}"></script>
+<script src="{% static 'assets/js/jquery-migrate-1.2.1.min.js' %}"></script>
+<script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'assets/js/templatemo.js' %}"></script>
+<script src="{% static 'assets/js/custom.js' %}"></script>
+{% endblock scripts %}

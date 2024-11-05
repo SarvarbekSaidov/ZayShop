@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Customer, Product, Category, Comment
@@ -79,16 +80,31 @@ def category_list(request):
     gender_categories = Category.objects.filter(type='Gender')
     sale_categories = Category.objects.filter(type='Sale')
     product_categories = Category.objects.filter(type='Product')
-    selected_subtype = request.GET.get('subtype')
-    products = Product.objects.all()
+    
+    selected_subtype = request.GET.get('subtype', '')
+    query = request.GET.get('q', '')
+    sort_option = request.GET.get('sort', '')
 
     products = Product.objects.all()
+
     if selected_subtype:
         products = products.filter(category__subtype=selected_subtype)
 
-    for product in products:
-        product.available_colors_list = product.available_colors.all()
-        product.images_list = product.images.all()   
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(brand__icontains=query)
+        )
+
+    if sort_option == 'name':
+        products = products.order_by('name')
+    elif sort_option == 'featured':
+        products = products.order_by('-rating')
+    elif sort_option == 'price':
+        products = products.order_by('-price')
+        
+    products = products.prefetch_related('available_colors', 'images')
 
     context = {
         'gender_categories': gender_categories,
@@ -96,10 +112,11 @@ def category_list(request):
         'product_categories': product_categories,
         'products': products,
         'selected_subtype': selected_subtype,
+        'query': query,
+        'sort_option': sort_option,
     }
-
+    
     return render(request, 'shop.html', context)
-
 
 def filter_products(request, category_id):
     products = Product.objects.filter(category__id=category_id)
@@ -118,11 +135,11 @@ def filter_products_by_gender(request, gender):
         'gender': gender,
     }
     return render(request, 'shop.html', context)
+
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     comments = product.comments.all()   
     form = CommentForm()
-
     specifications_list = product.specifications.split(',') if product.specifications else []
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]  
 
