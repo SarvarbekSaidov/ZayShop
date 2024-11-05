@@ -88,12 +88,19 @@
                                     <li class="pt-2">
                                         {% if product.available_colors.all %}
                                             {% for color in product.available_colors.all %}
-                                                <span class="badge badge-color-{{ color.name|lower }}">{{ color.name }}</span>
+                                                <span class="badge badge-color-{{ color.name|lower }}" data-toggle="tooltip" title="{{ color.name }}">{{ color.name }}</span>
                                             {% endfor %}
                                         {% else %}
                                             <p class="text-muted"><strong>No colors available</strong></p>
                                         {% endif %}
                                     </li>
+                                    
+                                    <script>
+                                        $(function () {
+                                            $('[data-toggle="tooltip"]').tooltip();
+                                        });
+                                    </script>
+                                    
                                 </ul>
                                 
                                 <ul class="list-unstyled d-flex justify-content-center mt-2 mb-1">
@@ -117,12 +124,11 @@
     </div>
 </div>
 
-<!-- Additional CSS Styles for Improved Appearance -->
 <style>
     .product-card {
         transition: transform 0.3s, box-shadow 0.3s;
-        border-radius: 15px; /* Round edges for a softer look */
-        border: 1px solid #e0e0e0; /* Subtle border */
+        border-radius: 15px;  
+        border: 1px solid #e0e0e0;  
     }
     .product-card:hover {
         transform: translateY(-5px);
@@ -150,7 +156,7 @@
     .badge {
         margin-right: 5px;
         padding: 5px 10px;
-        border-radius: 20px; /* Pill-shaped badges */
+        border-radius: 20px; 
         font-size: 0.75rem;
     }
     .badge-color-red { background-color: #f8d7da; color: red; } 
@@ -158,7 +164,19 @@
     .badge-color-blue { background-color: #d1ecf1; color: blue; } 
     .badge-color-yellow { background-color: #fff3cd; color: #856404; } 
     .badge-color-black { background-color: #e2e3e5; color: black; } 
-    .badge-color-white { background-color: white; color: black; }
+    .badge-color-white { background-color: #878889; color: white; }
+    .badge-color-colorful {
+        background: linear-gradient(to right, #ff7f50, #ff69b4, #1e90ff, #32cd32, #ffd700);
+        color: white;  
+        padding: 5px 15px;  
+        font-weight: bold; 
+    }
+    .color-dot-colorful{
+        background: linear-gradient(to right, #ff7f50, #ff69b4, #1e90ff, #32cd32, #ffd700);
+        color: white;  
+        padding: 5px 15px;  
+        font-weight: bold; 
+    }
 </style>
 
 {% endblock content %}
@@ -172,4 +190,4 @@
 <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'assets/js/templatemo.js' %}"></script>
 <script src="{% static 'assets/js/custom.js' %}"></script>
-{% endblock scripts %}
+{% endblock %}
