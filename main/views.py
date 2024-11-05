@@ -51,41 +51,10 @@ def shop_single(request, product_id):
     }
     return render(request, 'shop-single.html', context)
 
-def product_list(request):
-    products = Product.objects.all()
-    return render(request, 'products/product_list.html', {'products': products})
-
-def customer_list(request):
-    customers = Customer.objects.all()
-    return render(request, 'customers/customer_list.html', {'customers': customers})
-
-def add_product(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST)   
-        if form.is_valid():
-            form.save()
-            return redirect('main:shop')
-    else:
-        form = ProductForm() 
-
-    return render(request, 'products/add_product.html', {'form': form})
-
-def add_customer(request):
-    if request.method == 'POST':
-        form = CustomerForm(request.POST)   
-        if form.is_valid():
-            form.save()
-            return redirect('main:customer_list')
-    else:
-        form = CustomerForm()   
-
-    return render(request, 'customers/add_customer.html', {'form': form})
-
 def category_list(request):
     gender_categories = Category.objects.filter(type='Gender')
     sale_categories = Category.objects.filter(type='Sale')
     product_categories = Category.objects.filter(type='Product')
-    
     selected_subtype = request.GET.get('subtype', '')
     query = request.GET.get('q', '')
     sort_option = request.GET.get('sort', '')

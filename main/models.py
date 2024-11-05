@@ -35,7 +35,6 @@ class Customer(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-
 class Category(models.Model):
     TYPE_CHOICES = [
         ('Gender', 'Gender'),
@@ -111,7 +110,7 @@ class ProductImage(models.Model):
         return f"Image for {self.product.name} (ID: {self.pk})"
 
 class Comment(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments',null=True)   
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments', null=True)   
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
     text = models.TextField()
@@ -120,3 +119,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}: {self.text[:20]}...'
+
+    class Meta:
+        verbose_name = "Comment"
+        verbose_name_plural = "Comments"
