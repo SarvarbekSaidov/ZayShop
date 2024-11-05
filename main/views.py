@@ -2,8 +2,8 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Customer, Product, Category, Comment
-from .forms import CommentForm , ProductForm, CustomerForm
-from django.contrib import messages   
+from .forms import CommentForm, ProductForm, CustomerForm
+from django.contrib import messages
 
 def index(request):
     comments = Comment.objects.all()   
@@ -41,10 +41,15 @@ def shop(request):
     }
     return render(request, 'shop.html', context)
 
-
 def shop_single(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render(request, 'shop-single.html', {'product': product})
+    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]   
+
+    context = {
+        'product': product,
+        'related_products': related_products,
+    }
+    return render(request, 'shop-single.html', context)
 
 def product_list(request):
     products = Product.objects.all()
@@ -135,29 +140,39 @@ def filter_products_by_gender(request, gender):
         'gender': gender,
     }
     return render(request, 'shop.html', context)
-
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    comments = product.comments.all()   
+    
+    # Fetch comments related to the product
+    comments = product.comments.all()
+    
+    # Create a new comment form
     form = CommentForm()
-    specifications_list = product.specifications.split(',') if product.specifications else []
-    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]  
 
+    # Split specifications into a list
+    specifications_list = product.specifications.split(',') if product.specifications else []
+
+    # Get related products from the same category, excluding the current product
+    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:3]
+
+    # Handle POST request for adding a comment
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
+            # Create a new comment without saving it to the database yet
             comment = form.save(commit=False)
-            comment.product = product 
-            comment.save()
-            messages.success(request, 'Your comment has been added.')
-            return redirect('main:product_detail', product_id=product_id)
+            comment.product = product  # Associate the comment with the current product
+            comment.save()  # Save the comment to the database
+            messages.success(request, 'Your comment has been added.')  
+            return redirect('main:product_detail', product_id=product_id)  
 
     context = {
         'product': product,
         'comments': comments,
         'form': form,
         'specifications_list': specifications_list,
-        'related_products': related_products,   
+        'related_products': related_products,
     }
+    
+    # Render the template with the context
     return render(request, 'shop-single.html', context)
-
