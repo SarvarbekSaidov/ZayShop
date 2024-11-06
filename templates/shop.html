@@ -58,6 +58,8 @@
                                 <i class="fa fa-fw fa-search"></i>
                             </button>
                         </div>
+
+                        
                     </form>
                 </div>
             </div>
@@ -125,58 +127,134 @@
 </div>
 
 <style>
-    .product-card {
-        transition: transform 0.3s, box-shadow 0.3s;
-        border-radius: 15px;  
-        border: 1px solid #e0e0e0;  
-    }
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-    .product-overlay {
-        background-color: rgba(0, 0, 0, 0.6);
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-    .card:hover .product-overlay {
-        opacity: 1;
-    }
-    .product-overlay .btn-outline-light {
-        color: white;
-        border-color: white;
-    }
-    .product-overlay .btn-outline-light:hover {
-        background-color: white;
-        color: black;
-    }
-    .card-body .text-muted {
-        font-size: 0.85rem;
-    }
-    .badge {
-        margin-right: 5px;
-        padding: 5px 10px;
-        border-radius: 20px; 
-        font-size: 0.75rem;
-    }
-    .badge-color-red { background-color: #f8d7da; color: red; } 
-    .badge-color-green { background-color: #d4edda; color: green; } 
-    .badge-color-blue { background-color: #d1ecf1; color: blue; } 
-    .badge-color-yellow { background-color: #fff3cd; color: #856404; } 
-    .badge-color-black { background-color: #e2e3e5; color: black; } 
-    .badge-color-white { background-color: #878889; color: white; }
-    .badge-color-colorful {
-        background: linear-gradient(to right, #ff7f50, #ff69b4, #1e90ff, #32cd32, #ffd700);
-        color: white;  
-        padding: 5px 15px;  
-        font-weight: bold; 
-    }
-    .color-dot-colorful{
-        background: linear-gradient(to right, #ff7f50, #ff69b4, #1e90ff, #32cd32, #ffd700);
-        color: white;  
-        padding: 5px 15px;  
-        font-weight: bold; 
-    }
+.container {
+    padding-top: 2rem;
+}
+
+.card1 {
+ width: 190px;
+ height: 254px;
+ background-image: linear-gradient(163deg, #00ff75 0%, #3700ff 100%);
+ border-radius: 20px;
+ transition: all .3s;
+}
+
+.card2 {
+ width: 190px;
+ height: 254px;
+ background-color: #1a1a1a;
+ border-radius:15px;
+ transition: all .2s;
+}
+
+.card2:hover {
+ transform: scale(0.98);
+ border-radius: 20px;
+}
+
+.card:hover {
+ box-shadow: 0px 0px 30px 1px rgba(0, 255, 117, 0.30);
+}
+
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    border: none;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    position: relative;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* Overlay and hover styles */
+.product-overlay {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.card:hover .product-overlay {
+    opacity: 1;
+}
+.product-overlay .btn-outline-light {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.4);
+    transition: background-color 0.2s, color 0.2s;
+}
+.product-overlay .btn-outline-light:hover {
+    background-color: #f8f9fa;
+    color: #343a40;
+}
+
+/* Text and font styling */
+.card-body {
+    padding: 15px;
+    background-color: #fff;
+    text-align: center;
+}
+.card-body a {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #333;
+    transition: color 0.3s;
+}
+.card-body a:hover {
+    color: #007bff;
+}
+.card-body .text-muted {
+    font-size: 0.9rem;
+}
+.card-body .font-weight-bold {
+    color: #333;
+    font-size: 1.3rem;
+    margin-top: 10px;
+}
+
+/* Badge styling */
+.badge {
+    margin: 4px;
+    padding: 7px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+.badge-color-red { background-color: #f8d7da; color: #d9534f; }
+.badge-color-green { background-color: #d4edda; color: #28a745; }
+.badge-color-blue { background-color: #d1ecf1; color: #17a2b8; }
+.badge-color-yellow { background-color: #fff3cd; color: #ffc107; }
+.badge-color-black { background-color: #e2e3e5; color: #343a40; }
+.badge-color-white { background-color: #f8f9fa; color: #6c757d; }
+.badge-color-colorful {
+    background: linear-gradient(45deg, #ff7f50, #ff69b4, #1e90ff, #32cd32, #ffd700);
+    color: white;
+    padding: 8px 15px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Tooltip for color options */
+[data-toggle="tooltip"] {
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+[data-toggle="tooltip"]:hover {
+    background-color: #e9ecef;
+}
+
+/* Sidebar styling */
+.templatemo-accordion h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+}
+.templatemo-accordion .text-dark {
+    font-weight: 600;
+}
+
 </style>
 
 {% endblock content %}

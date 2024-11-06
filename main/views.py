@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Customer, Product, Category, Comment
+from .models import Customer, Product, Category, Comment , Color, Size
 from .forms import CommentForm, ProductForm, CustomerForm
 from django.contrib import messages
 
@@ -58,6 +58,9 @@ def category_list(request):
     selected_subtype = request.GET.get('subtype', '')
     query = request.GET.get('q', '')
     sort_option = request.GET.get('sort', '')
+    
+    color = Color.objects.all()
+    size = Size.objects.all()
 
     products = Product.objects.all()
 
@@ -68,8 +71,13 @@ def category_list(request):
         products = products.filter(
             Q(name__icontains=query) | 
             Q(description__icontains=query) |
-            Q(brand__icontains=query)
+            Q(brand__icontains=query) |
+            Q(category__name__icontains=query) |
+            Q(category__subtype__icontains=query) 
         )
+        color = color.filter(name__icontains=query)
+        size = size.filter(size__icontains=query)
+
 
     if sort_option == 'name':
         products = products.order_by('name')
@@ -92,6 +100,8 @@ def category_list(request):
     
     return render(request, 'shop.html', context)
 
+
+
 def filter_products(request, category_id):
     products = Product.objects.filter(category__id=category_id)
     
@@ -109,6 +119,7 @@ def filter_products_by_gender(request, gender):
         'gender': gender,
     }
     return render(request, 'shop.html', context)
+
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     
@@ -143,5 +154,4 @@ def product_detail(request, product_id):
         'related_products': related_products,
     }
     
-    # Render the template with the context
     return render(request, 'shop-single.html', context)
