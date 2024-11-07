@@ -8,8 +8,10 @@ from .views import (
     filter_products,
     filter_products_by_gender,
 )
+from . import views
 
 app_name = 'main'
+
 
 urlpatterns = [
     path('', index, name='index'),
@@ -20,4 +22,6 @@ urlpatterns = [
     path('product/<int:product_id>/', product_detail, name='product_detail'),
     path('filter/<int:category_id>/', filter_products, name='filter_products'),
     path('shop/<str:gender>/', filter_products_by_gender, name='filter_products_by_gender'),
+    path('delete_comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),
+    
 ]

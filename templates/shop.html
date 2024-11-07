@@ -22,11 +22,11 @@
                     </a>
                     <ul class="collapse list-unstyled pl-3">
                         {% for category in product_categories %}
-                            <li>
-                                <a class="text-decoration-none text-secondary" href="?subtype={{ category.subtype }}">{{ category.name }}</a>
-                            </li>
+                        <li>
+                            <a class="text-decoration-none text-secondary" href="?subtype={{ category.subtype }}">{{ category.name }}</a>
+                        </li>
                         {% empty %}
-                            <li><a class="text-decoration-none text-muted" href="#">No categories available</a></li>
+                        <li><a class="text-decoration-none text-muted" href="#">No categories available</a></li>
                         {% endfor %}
                     </ul>
                 </li>
@@ -38,28 +38,33 @@
             <div class="row mb-4 align-items-center">
                 <div class="col-md-6">
                     <ul class="list-inline shop-top-menu pb-3 pt-1">
-                        <li class="list-inline-item"><a class="h5 text-dark text-decoration-none mr-3" href="{% url 'main:shop' %}">All</a></li>
-                        <li class="list-inline-item"><a class="h5 text-dark text-decoration-none mr-3" href="{% url 'main:filter_products_by_gender' 'male' %}">Men's</a></li>
-                        <li class="list-inline-item"><a class="h5 text-dark text-decoration-none" href="{% url 'main:filter_products_by_gender' 'female' %}">Women's</a></li>
+                        <li class="list-inline-item"><a class="h5 text-dark text-decoration-none mr-3"
+                                href="{% url 'main:shop' %}">All</a></li>
+                        <li class="list-inline-item"><a class="h5 text-dark text-decoration-none mr-3"
+                                href="{% url 'main:filter_products_by_gender' 'male' %}">Men's</a></li>
+                        <li class="list-inline-item"><a class="h5 text-dark text-decoration-none"
+                                href="{% url 'main:filter_products_by_gender' 'female' %}">Women's</a></li>
                     </ul>
                 </div>
                 <div class="col-md-6">
                     <form method="get" action="{% url 'main:shop' %}" id="sortForm" class="d-flex justify-content-end">
                         <input type="hidden" name="subtype" value="{{ selected_subtype|default:'' }}">
-                        <select name="sort" class="form-control rounded mr-2" onchange="document.getElementById('sortForm').submit();">
+                        <select name="sort" class="form-control rounded mr-2"
+                            onchange="document.getElementById('sortForm').submit();">
                             <option value="" {% if not sort_option %}selected{% endif %}>Sort by</option>
                             <option value="featured" {% if sort_option == 'featured' %}selected{% endif %}>Featured</option>
                             <option value="name" {% if sort_option == 'name' %}selected{% endif %}>A to Z</option>
                             <option value="price" {% if sort_option == 'price' %}selected{% endif %}>Price</option>
                         </select>
                         <div class="input-group">
-                            <input type="text" name="q" class="form-control rounded" placeholder="Search ..." value="{{ query|default:'' }}" aria-label="Search">
+                            <input type="text" name="q" class="form-control rounded" placeholder="Search ..."
+                                value="{{ query|default:'' }}" aria-label="Search">
                             <button type="submit" class="btn btn-outline-secondary rounded-right">
                                 <i class="fa fa-fw fa-search"></i>
                             </button>
                         </div>
 
-                        
+
                     </form>
                 </div>
             </div>
@@ -67,59 +72,68 @@
             <!-- Product Display Grid -->
             <div class="row">
                 {% for product in products %}
-                    <div class="col-md-4 mb-4">
-                        <div class="card product-card shadow-sm rounded-lg border-0 h-100">
-                            <div class="card rounded-lg overflow-hidden position-relative">
-                                {% if product.images.all %}
-                                    <img class="card-img-top img-fluid" src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
-                                {% else %}
-                                    <img class="card-img-top img-fluid" src="{{ DEFAULT_IMAGE_URL }}" alt="{{ product.name }}">
-                                {% endif %}
-                                <div class="card-img-overlay product-overlay d-flex justify-content-center align-items-center">
-                                    <ul class="list-unstyled">
-                                        <li><a class="btn btn-outline-light" href="{% url 'main:shop_single' product.id %}"><i class="far fa-heart"></i></a></li>
-                                        <li><a class="btn btn-outline-light mt-2" href="{% url 'main:shop_single' product.id %}"><i class="far fa-eye"></i></a></li>
-                                        <li><a class="btn btn-outline-light mt-2" href="{% url 'main:shop_single' product.id %}"><i class="fas fa-cart-plus"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="card-body text-center">
-                                <a href="{% url 'main:shop_single' product.id %}" class="h5 text-decoration-none text-dark">{{ product.name }}</a>
-                                <p class="small text-muted">{{ product.brand }}</p>
-                                <ul class="w-100 list-unstyled d-flex justify-content-center mb-0">
-                                    <li class="pt-2">
-                                        {% if product.available_colors.all %}
-                                            {% for color in product.available_colors.all %}
-                                                <span class="badge badge-color-{{ color.name|lower }}" data-toggle="tooltip" title="{{ color.name }}">{{ color.name }}</span>
-                                            {% endfor %}
-                                        {% else %}
-                                            <p class="text-muted"><strong>No colors available</strong></p>
-                                        {% endif %}
-                                    </li>
-                                    
-                                    <script>
-                                        $(function () {
-                                            $('[data-toggle="tooltip"]').tooltip();
-                                        });
-                                    </script>
-                                    
+                <div class="col-md-4 mb-4">
+                    <div class="card product-card shadow-sm rounded-lg border-0 h-100">
+                        <div class="card rounded-lg overflow-hidden position-relative">
+                            {% if product.images.all %}
+                            <img class="card-img-top img-fluid" src="{{ product.images.first.image.url }}"
+                                alt="{{ product.name }}">
+                            {% else %}
+                            <img class="card-img-top img-fluid" src="{{ DEFAULT_IMAGE_URL }}" alt="{{ product.name }}">
+                            {% endif %}
+                            <div
+                                class="card-img-overlay product-overlay d-flex justify-content-center align-items-center">
+                                <ul class="list-unstyled">
+                                    <li><a class="btn btn-outline-light"
+                                            href="{% url 'main:shop_single' product.id %}"><i
+                                                class="far fa-heart"></i></a></li>
+                                    <li><a class="btn btn-outline-light mt-2"
+                                            href="{% url 'main:shop_single' product.id %}"><i
+                                                class="far fa-eye"></i></a></li>
+                                    <li><a class="btn btn-outline-light mt-2"
+                                            href="{% url 'main:shop_single' product.id %}"><i
+                                                class="fas fa-cart-plus"></i></a></li>
                                 </ul>
-                                
-                                <ul class="list-unstyled d-flex justify-content-center mt-2 mb-1">
-                                    <li>
-                                        {% for i in "12345" %}
-                                            {% if forloop.counter <= product.rating %}
-                                                <i class="text-warning fa fa-star"></i>
-                                            {% else %}
-                                                <i class="text-muted fa fa-star"></i>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </li>
-                                </ul>
-                                <p class="text-dark font-weight-bold">${{ product.price }}</p>
                             </div>
                         </div>
+                        <div class="card-body text-center">
+                            <a href="{% url 'main:shop_single' product.id %}"
+                                class="h5 text-decoration-none text-dark">{{ product.name }}</a>
+                            <p class="small text-muted">{{ product.brand }}</p>
+                            <ul class="w-100 list-unstyled d-flex justify-content-center mb-0">
+                                <li class="pt-2">
+                                    {% if product.available_colors.all %}
+                                    {% for color in product.available_colors.all %}
+                                    <span class="badge badge-color-{{ color.name|lower }}" data-toggle="tooltip"
+                                        title="{{ color.name }}">{{ color.name }}</span>
+                                    {% endfor %}
+                                    {% else %}
+                                    <p class="text-muted"><strong>No colors available</strong></p>
+                                    {% endif %}
+                                </li>
+
+                                <script>
+                                    $(function () {
+                                        $('[data-toggle="tooltip"]').tooltip();
+                                    });
+                                </script>
+
+                            </ul>
+
+                            <ul class="list-unstyled d-flex justify-content-center mt-2 mb-1">
+                                <li>
+                                    {% for i in "12345" %}
+                                    {% if forloop.counter <= product.rating %} <i class="text-warning fa fa-star"></i>
+                                        {% else %}
+                                        <i class="text-muted fa fa-star"></i>
+                                        {% endif %}
+                                        {% endfor %}
+                                </li>
+                            </ul>
+                            <p class="text-dark font-weight-bold">${{ product.price }}</p>
+                        </div>
                     </div>
+                </div>
                 {% endfor %}
             </div>
         </div>
@@ -127,134 +141,168 @@
 </div>
 
 <style>
-.container {
-    padding-top: 2rem;
-}
+    .container {
+        padding-top: 2rem;
+    }
 
-.card1 {
- width: 190px;
- height: 254px;
- background-image: linear-gradient(163deg, #00ff75 0%, #3700ff 100%);
- border-radius: 20px;
- transition: all .3s;
-}
+    .card1 {
+        width: 190px;
+        height: 254px;
+        background-image: linear-gradient(163deg, #00ff75 0%, #3700ff 100%);
+        border-radius: 20px;
+        transition: all .3s;
+    }
 
-.card2 {
- width: 190px;
- height: 254px;
- background-color: #1a1a1a;
- border-radius:15px;
- transition: all .2s;
-}
+    .card2 {
+        width: 190px;
+        height: 254px;
+        background-color: #1a1a1a;
+        border-radius: 15px;
+        transition: all .2s;
+    }
 
-.card2:hover {
- transform: scale(0.98);
- border-radius: 20px;
-}
+    .card2:hover {
+        transform: scale(0.98);
+        border-radius: 20px;
+    }
 
-.card:hover {
- box-shadow: 0px 0px 30px 1px rgba(0, 255, 117, 0.30);
-}
+    .card:hover {
+        box-shadow: 0px 0px 30px 1px rgba(0, 255, 117, 0.30);
+    }
 
-.product-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 12px;
-    border: none;
-    overflow: hidden;
-    background-color: #f5f5f5;
-    position: relative;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-.product-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
-}
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 12px;
+        border: none;
+        overflow: hidden;
+        background-color: #f5f5f5;
+        position: relative;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
 
-/* Overlay and hover styles */
-.product-overlay {
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-.card:hover .product-overlay {
-    opacity: 1;
-}
-.product-overlay .btn-outline-light {
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.4);
-    transition: background-color 0.2s, color 0.2s;
-}
-.product-overlay .btn-outline-light:hover {
-    background-color: #f8f9fa;
-    color: #343a40;
-}
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+    }
 
-/* Text and font styling */
-.card-body {
-    padding: 15px;
-    background-color: #fff;
-    text-align: center;
-}
-.card-body a {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #333;
-    transition: color 0.3s;
-}
-.card-body a:hover {
-    color: #007bff;
-}
-.card-body .text-muted {
-    font-size: 0.9rem;
-}
-.card-body .font-weight-bold {
-    color: #333;
-    font-size: 1.3rem;
-    margin-top: 10px;
-}
+    /* Overlay and hover styles */
+    .product-overlay {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
 
-/* Badge styling */
-.badge {
-    margin: 4px;
-    padding: 7px 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-.badge-color-red { background-color: #f8d7da; color: #d9534f; }
-.badge-color-green { background-color: #d4edda; color: #28a745; }
-.badge-color-blue { background-color: #d1ecf1; color: #17a2b8; }
-.badge-color-yellow { background-color: #fff3cd; color: #ffc107; }
-.badge-color-black { background-color: #e2e3e5; color: #343a40; }
-.badge-color-white { background-color: #f8f9fa; color: #6c757d; }
-.badge-color-colorful {
-    background: linear-gradient(45deg, #ff7f50, #ff69b4, #1e90ff, #32cd32, #ffd700);
-    color: white;
-    padding: 8px 15px;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
+    .card:hover .product-overlay {
+        opacity: 1;
+    }
 
-/* Tooltip for color options */
-[data-toggle="tooltip"] {
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-[data-toggle="tooltip"]:hover {
-    background-color: #e9ecef;
-}
+    .product-overlay .btn-outline-light {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.4);
+        transition: background-color 0.2s, color 0.2s;
+    }
 
-/* Sidebar styling */
-.templatemo-accordion h2 {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #333;
-}
-.templatemo-accordion .text-dark {
-    font-weight: 600;
-}
+    .product-overlay .btn-outline-light:hover {
+        background-color: #f8f9fa;
+        color: #343a40;
+    }
 
+    /* Text and font styling */
+    .card-body {
+        padding: 15px;
+        background-color: #fff;
+        text-align: center;
+    }
+
+    .card-body a {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #333;
+        transition: color 0.3s;
+    }
+
+    .card-body a:hover {
+        color: #007bff;
+    }
+
+    .card-body .text-muted {
+        font-size: 0.9rem;
+    }
+
+    .card-body .font-weight-bold {
+        color: #333;
+        font-size: 1.3rem;
+        margin-top: 10px;
+    }
+
+    /* Badge styling */
+    .badge {
+        margin: 4px;
+        padding: 7px 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .badge-color-red {
+        background-color: #f8d7da;
+        color: #d9534f;
+    }
+
+    .badge-color-green {
+        background-color: #d4edda;
+        color: #28a745;
+    }
+
+    .badge-color-blue {
+        background-color: #d1ecf1;
+        color: #17a2b8;
+    }
+
+    .badge-color-yellow {
+        background-color: #fff3cd;
+        color: #ffc107;
+    }
+
+    .badge-color-black {
+        background-color: #e2e3e5;
+        color: #343a40;
+    }
+
+    .badge-color-white {
+        background-color: #f8f9fa;
+        color: #6c757d;
+    }
+
+    .badge-color-colorful {
+        background: linear-gradient(45deg, #ff7f50, #ff69b4, #1e90ff, #32cd32, #ffd700);
+        color: white;
+        padding: 8px 15px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    /* Tooltip for color options */
+    [data-toggle="tooltip"] {
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    [data-toggle="tooltip"]:hover {
+        background-color: #e9ecef;
+    }
+
+    /* Sidebar styling */
+    .templatemo-accordion h2 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .templatemo-accordion .text-dark {
+        font-weight: 600;
+    }
 </style>
 
 {% endblock content %}

@@ -92,6 +92,7 @@ class Product(models.Model):
     gender = models.CharField(max_length=10, choices=[('male', 'Male'), ('female', 'Female'), ('unisex', 'Unisex')], null=True, blank=True)
     images = models.ManyToManyField('ProductImage', related_name='products', blank=True)
 
+
     class Meta:
         verbose_name = "Product"
         verbose_name_plural = "Products"
@@ -110,15 +111,16 @@ class ProductImage(models.Model):
         return f"Image for {self.product.name} (ID: {self.pk})"
 
 class Comment(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments', null=True)   
-    first_name = models.CharField(max_length=100, null=True)
-    last_name = models.CharField(max_length=100, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments', null=True)  
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)  
+    full_name = models.CharField(max_length=100, null=True)
     text = models.TextField()
     rating = models.IntegerField(default=0, choices=[(i, f"{i} Star") for i in range(6)])
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}: {self.text[:20]}...'
+        return f'{self.full_name}: {self.text[:20]}...'
+
 
     class Meta:
         verbose_name = "Comment"

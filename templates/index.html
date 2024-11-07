@@ -149,11 +149,25 @@
                 {% for comment in comments %}
                     <div class="list-group-item my-3 border rounded shadow-sm bg-white">
                         <div class="d-flex justify-content-between align-items-start">
-                            <h5 class="mb-1">{{ comment.first_name }} {{ comment.last_name }}</h5>
-                            <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
+                            <!-- Customer Name and Date -->
+                            <div>
+                                <h5 class="mb-1">{{ comment.full_name }}</h5>
+                                <small class="text-muted">{{ comment.created_at|date:"Y-m-d H:i" }}</small>
+                            </div>
+                            
+                            <!-- Product Name (only if the comment is associated with a product) -->
+                            {% if comment.product %}
+                                <div>
+                                    <span class="badge bg-info text-white">Product: {{ comment.product.name }}</span>
+                                </div>
+                            {% endif %}
                         </div>
+                        
+                        <!-- Comment Text -->
                         <p class="mb-1">{{ comment.text }}</p>
-                        <div class="text-warning">
+                        
+                        <!-- Rating Section -->
+                        <div class="text-warning mb-2">
                             {% for i in "12345" %}
                                 {% if forloop.counter <= comment.rating %}
                                     <i class="fa fa-star"></i>
@@ -162,6 +176,11 @@
                                 {% endif %}
                             {% endfor %}
                         </div>
+    
+                        <!-- Show delete button only if the logged-in user is the comment author -->
+                        {% if comment.user == request.user %}
+                            <a href="{% url 'main:delete_comment' comment.id %}" class="btn btn-danger btn-sm mt-2">Delete</a>
+                        {% endif %}
                     </div>
                 {% empty %}
                     <div class="list-group-item text-muted">No feedback yet.</div>
@@ -172,33 +191,77 @@
         <h3 class="h5 mb-3">Leave Your Feedback</h3>
         <form method="post" class="p-4 border rounded shadow-sm bg-light">
             {% csrf_token %}
-            <div class="form-group mb-3">
-                <label for="first_name">First Name</label>
-                <input type="text" name="first_name" class="form-control" required>
+            
+            <div class="mb-3">
+                <label for="id_full_name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="id_full_name" name="full_name" value="{{ form.full_name.value|default:'' }}" required placeholder="Enter your full name">
             </div>
-            <div class="form-group mb-3">
-                <label for="last_name">Last Name</label>
-                <input type="text" name="last_name" class="form-control" required>
+    
+            <div class="mb-3">
+                <label for="id_text" class="form-label">Your Comment</label>
+                <textarea class="form-control" id="id_text" name="text" rows="4" required placeholder="Write your review...">{{ form.text.value|default:'' }}</textarea>
             </div>
-            <div class="form-group mb-3">
-                <label for="text">Feedback</label>
-                <textarea name="text" class="form-control" rows="4" required></textarea>
+    
+            <div class="mb-3">
+                <label class="form-label">Rating</label>
+                <div class="star-rating">
+                    {% for i in '12345' %}
+                    <input type="radio" id="star{{ i }}" name="rating" style="font-size: 24px;" value="{{ i }}" class="rating-input " {% if form.rating.value == i %}checked{% endif %} required>
+                    <label style="font-size: 24px;" for="star{{ i }}" class="rating-star">&#9733;</label>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="form-group mb-3">
-                <label for="rating">Rating</label>
-                <select name="rating" class="form-control" required>
-                    <option value="" disabled selected>Select a rating</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-success w-100">Submit</button>
+            
+    
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+    
+            <button type="submit" class="btn btn-success w-100 mt-3">Submit</button>
         </form>
     </div>
+    
+
 <style>
+.star-rating {
+    display: flex;
+    gap: 5px;  
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: left;
+    font-size: 50px;  
+
+}
+
+.star-rating input {
+    display: none;  
+}
+
+.star-rating label {
+    font-size: 50px;  
+    color: #ddd;  
+    cursor: pointer;
+    transition: color 0.2s ease-in-out; 
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #ffcc00;  
+}
+
+.star-rating input:checked + label {
+    color: #ffc107;  
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #f7b500;  
+}
+
+.star-rating input:focus + label {
+    outline: 2px solid #ffcc00;
+}
+
+
+
     body {
     background-color: #f8f9fa;
 }
