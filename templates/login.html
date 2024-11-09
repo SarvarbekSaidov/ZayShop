@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login{% endblock %}
+
+{% block content %}
+  <form method="POST" class="form gap-20">
+    {% csrf_token %}
+    <input placeholder="Enter your username" class="input" type="text" name="username" required>
+    <input placeholder="*********" class="input" type="password" name="password" required>
+    <button type="submit" class="sbmt">Log In</button>
+
+    {% if error %}
+      <div class="error-message">{{ error }}</div>
+    {% endif %}
+  </form>
+
+  <style>
+    .form { 
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 20px; 
+      padding: 40px;
+      background: linear-gradient(to bottom, #67c47f, #59AB6E);
+      border-radius: 15px;
+      overflow: hidden;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      transform: rotateX(-10deg);
+      transition: all 0.3s ease-in-out;
+      box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+      animation: form-animation 0.5s ease-in-out;
+      width: 100%;  
+      max-width: 500px;  
+      margin: 20px auto; 
+      height: 500px;   
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between; 
+    }
+
+    @keyframes form-animation {
+      from {
+        transform: rotateX(-30deg);
+        opacity: 0;
+      }
+
+      to {
+        transform: rotateX(0deg);
+        opacity: 1;
+      }
+    }
+
+    .input {
+      padding: 12px;
+      border-radius: 5px;
+      background-color: transparent;
+      transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      color: rgb(255, 255, 255);
+      border: 2px solid #59AB6E;
+      box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    }
+
+    .input::placeholder {
+      color: #fff;
+    }
+
+    .input:hover,
+    .input:focus {
+      border-color: #59AB6E;
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05) rotateY(20deg);
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+      outline: none;
+    }
+
+    button {
+      padding: 12px 22px;
+      border: none;
+      border-radius: 5px;
+      background-color: #59AB6E;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      transform: rotateX(-10deg);
+      transition: all 0.3s ease-in-out;
+      box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    }
+
+    button:hover {
+      background-color: #2ea44c;
+      font-size: 17px;
+      transform: scale(1.05) rotateY(20deg) rotateX(10deg);
+      box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    }
+
+    .sbmt {
+        margin-top: auto;  
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  </style>
+{% endblock %}

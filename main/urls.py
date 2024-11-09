@@ -7,19 +7,16 @@ from .views import (
     ContactView,
     ShopView,
     ShopSingleView,
-    CategoryListView,
     ProductDetailView,
     FilterProductsView,
     FilterProductsByGenderView,
     DeleteCommentView,
+    admin_login,
+    admin_logout
 )
-from . import views
 
 app_name = 'main'
 
-def admin_logout(request):
-    logout(request)
-    return redirect('/admin/login/')
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),  
@@ -32,4 +29,5 @@ urlpatterns = [
     path('shop/<str:gender>/', FilterProductsByGenderView.as_view(), name='filter_products_by_gender'),  
     path('delete_comment/<int:pk>/', DeleteCommentView.as_view(), name='delete_comment'),  
     path('admin-logout/', admin_logout, name='admin_logout'),
+    path('admin-login/', admin_login, name='admin_login'),
 ]

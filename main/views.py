@@ -1,18 +1,16 @@
-from django.contrib.auth import logout
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib import messages
-from django.core.paginator import Paginator
+from django.contrib.auth import authenticate, login, logout
+from django.urls import reverse
 from django.db.models import Q
-from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse_lazy
-from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView, CreateView, DeleteView
-from .models import Customer, Product, Category, Comment, Color, Size
 from .forms import CommentForm
+from django.contrib import messages
+from django.urls import reverse_lazy
+from django.shortcuts import redirect , render
+from .models import  Product, Category, Comment
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import TemplateView, ListView, DetailView, DeleteView
 
-class IndexView(LoginRequiredMixin, TemplateView):
+class IndexView(TemplateView):
     template_name = 'index.html'
-    login_url = '/admin/login/'   
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -33,12 +31,30 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context['form'] = form
         return self.render_to_response(context)
     
-    
+
 # Logout View
 def admin_logout(request):
     logout(request)
     messages.success(request, 'You have been logged out successfully.')
-    return redirect('/admin/login/')
+    return redirect('main:index')
+
+#login view
+def admin_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            return redirect(reverse('main:index'))  
+        else:
+            return render(request, ' login.html', {
+                'error': 'Invalid username or password.'
+            })
+    
+    return render(request,  'login.html')
 
 # Delete Comment View
 class DeleteCommentView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
