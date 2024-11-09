@@ -103,7 +103,15 @@ class ShopView(ListView):
                 products = products.filter(category=category)
 
         if query:
-            products = products.filter(name__icontains=query)
+            products = products.filter(
+                Q(name__icontains=query) | 
+                Q(description__icontains=query) | 
+                Q(price__icontains=query) | 
+                Q(available_colors__name__icontains=query) | 
+                Q(category__name__icontains=query) | 
+                Q(specifications__icontains=query) | 
+                Q(brand__icontains=query)
+            ).distinct()
 
         if sort_option == 'featured':
             products = products.filter(featured_product=True)
