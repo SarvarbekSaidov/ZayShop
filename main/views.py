@@ -80,27 +80,49 @@ class AboutView(TemplateView):
 # Contact View
 class ContactView(TemplateView):
     template_name = 'contact.html'
-
-# Shop View with Pagination and Filtering
 class ShopView(ListView):
     model = Product
     template_name = 'shop.html'
     context_object_name = 'products'
-    paginate_by = 2 
+    paginate_by = 2
 
     def get_queryset(self):
         selected_gender = self.request.GET.get('gender')
+        selected_subtype = self.request.GET.get('subtype')
+        sort_option = self.request.GET.get('sort')
+        query = self.request.GET.get('q', '')
+
         products = Product.objects.all()
+
         if selected_gender:
             products = products.filter(gender=selected_gender)
+
+        if selected_subtype:
+            category = Category.objects.filter(subtype=selected_subtype).first()
+            if category:
+                products = products.filter(category=category)
+
+        if query:
+            products = products.filter(name__icontains=query)
+
+        if sort_option == 'featured':
+            products = products.filter(featured_product=True)
+        elif sort_option == 'name':
+            products = products.order_by('name')
+        elif sort_option == 'price':
+            products = products.order_by('-price')
+
         return products
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
         context['selected_gender'] = self.request.GET.get('gender')
+        context['selected_subtype'] = self.request.GET.get('subtype')
+        context['sort_option'] = self.request.GET.get('sort')  
+        context['query'] = self.request.GET.get('q', '')   
         return context
-
+    
 # Shop Single Product Detail View
 class ShopSingleView(DetailView):
     model = Product

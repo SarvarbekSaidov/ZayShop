@@ -21,7 +21,7 @@
                         <i class="fa fa-chevron-circle-down mt-1 text-muted"></i>
                     </a>
                     <ul class="collapse list-unstyled pl-3">
-                        {% for category in product_categories %}
+                        {% for category in categories %}
                         <li>
                             <a class="text-decoration-none text-secondary" href="?subtype={{ category.subtype }}">{{ category.name }}</a>
                         </li>
@@ -29,6 +29,7 @@
                         <li><a class="text-decoration-none text-muted" href="#">No categories available</a></li>
                         {% endfor %}
                     </ul>
+                    
                 </li>
             </ul>
         </div>
@@ -48,25 +49,29 @@
                 </div>
                 <div class="col-md-6">
                     <form method="get" action="{% url 'main:shop' %}" id="sortForm" class="d-flex justify-content-end">
+                        <!-- Hidden input to maintain the selected subtype -->
                         <input type="hidden" name="subtype" value="{{ selected_subtype|default:'' }}">
-                        <select name="sort" class="form-control rounded mr-2"
-                            onchange="document.getElementById('sortForm').submit();">
+                        <input type="hidden" name="gender" value="{{ selected_gender|default:'' }}">
+                
+                        <!-- Sorting dropdown -->
+                        <select name="sort" class="form-control rounded mr-2" onchange="document.getElementById('sortForm').submit();">
                             <option value="" {% if not sort_option %}selected{% endif %}>Sort by</option>
                             <option value="featured" {% if sort_option == 'featured' %}selected{% endif %}>Featured</option>
                             <option value="name" {% if sort_option == 'name' %}selected{% endif %}>A to Z</option>
                             <option value="price" {% if sort_option == 'price' %}selected{% endif %}>Price</option>
                         </select>
+                
+                        <!-- Search input -->
                         <div class="input-group">
                             <input type="text" name="q" class="form-control rounded" placeholder="Search ..."
-                                value="{{ query|default:'' }}" aria-label="Search">
+                                   value="{{ query|default:'' }}" aria-label="Search">
                             <button type="submit" class="btn btn-outline-secondary rounded-right">
                                 <i class="fa fa-fw fa-search"></i>
                             </button>
                         </div>
-
-
                     </form>
                 </div>
+                
             </div>
 
             <!-- Product Display Grid -->
