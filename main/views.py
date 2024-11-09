@@ -1,182 +1,204 @@
 from django.contrib.auth import logout
-from django.db.models import Q
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Customer, Product, Category, Comment , Color, Size
-from .forms import CommentForm, ProductForm, CustomerForm
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse_lazy
+from django.views import View
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, DeleteView
+from .models import Customer, Product, Category, Comment, Color, Size
+from .forms import CommentForm
 
-@login_required(login_url='/admin/login/')
-def index(request):
-    comments = Comment.objects.all()  
-    form = CommentForm()
+class IndexView(LoginRequiredMixin, TemplateView):
+    template_name = 'index.html'
+    login_url = '/admin/login/'   
 
-    if request.method == 'POST':
-        if not request.user.is_authenticated:
-            return redirect('/admin/login/')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = Comment.objects.all()
+        context['form'] = CommentForm()
+        return context
 
+    def post(self, request, *args, **kwargs):
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
             comment.user = request.user
-
-            if not comment.product:
-                comment.product = None  
-
             comment.save()
-
             messages.success(request, 'Your comment has been successfully added!')
-            return redirect('main:index')   
+            return redirect('main:index')
 
-    context = {
-        'comments': comments,
-        'form': form,
-    }
-    return render(request, 'index.html', context)
-
-
+        context = self.get_context_data()
+        context['form'] = form
+        return self.render_to_response(context)
+    
+    
+# Logout View
 def admin_logout(request):
-    logout(request)   
+    logout(request)
     messages.success(request, 'You have been logged out successfully.')
     return redirect('/admin/login/')
 
-@login_required
-def delete_comment(request, comment_id):
-    comment = get_object_or_404(Comment, id=comment_id)
+# Delete Comment View
+class DeleteCommentView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    success_url = reverse_lazy('main:index')
 
-    if comment.user == request.user:
-        comment.delete()
-        messages.success(request, 'Your comment has been successfully deleted.')
-    else:
-        messages.error(request, 'You can only delete your own comments.')
+    def test_func(self):
+        comment = self.get_object()
+        return comment.user == self.request.user
 
-    return redirect('main:index')
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Your comment has been successfully deleted.')
+        return super().delete(request, *args, **kwargs)
 
+    def handle_no_permission(self):
+        messages.error(self.request, 'You can only delete your own comments.')
+        return redirect('main:index')
 
+# About View
+class AboutView(TemplateView):
+    template_name = 'about.html'
 
+# Contact View
+class ContactView(TemplateView):
+    template_name = 'contact.html'
 
-def about(request):
-    return render(request, 'about.html')
+# Shop View with Pagination and Filtering
+class ShopView(ListView):
+    model = Product
+    template_name = 'shop.html'
+    context_object_name = 'products'
+    paginate_by = 2 
 
-def contact(request):
-    return render(request, 'contact.html')
+    def get_queryset(self):
+        selected_gender = self.request.GET.get('gender')
+        products = Product.objects.all()
+        if selected_gender:
+            products = products.filter(gender=selected_gender)
+        return products
 
-def shop(request):
-    categories = Category.objects.all()
-    products = Product.objects.all()   
-    selected_gender = request.GET.get('gender')
-    if selected_gender:
-        products = products.filter(gender=selected_gender)   
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        context['selected_gender'] = self.request.GET.get('gender')
+        return context
 
-    context = {
-        'categories': categories,
-        'products': products,
-    }
-    return render(request, 'shop.html', context)
+# Shop Single Product Detail View
+class ShopSingleView(DetailView):
+    model = Product
+    template_name = 'shop-single.html'
+    context_object_name = 'product'
+    pk_url_kwarg = 'product_id'
 
-def shop_single(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]   
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['related_products'] = Product.objects.filter(
+            category=self.object.category
+        ).exclude(id=self.object.id)[:4]
+        return context
 
-    context = {
-        'product': product,
-        'related_products': related_products,
-    }
-    return render(request, 'shop-single.html', context)
+# Category List and Filter View
+class CategoryListView(ListView):
+    model = Product
+    template_name = 'shop.html'
+    context_object_name = 'products'
 
-def category_list(request):
-    gender_categories = Category.objects.filter(type='Gender')
-    sale_categories = Category.objects.filter(type='Sale')
-    product_categories = Category.objects.filter(type='Product')
-    selected_subtype = request.GET.get('subtype', '')
-    query = request.GET.get('q', '')
-    sort_option = request.GET.get('sort', '')
-    
-    color = Color.objects.all()
-    size = Size.objects.all()
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        selected_subtype = self.request.GET.get('subtype', '')
+        query = self.request.GET.get('q', '')
+        sort_option = self.request.GET.get('sort', '')
 
-    products = Product.objects.all()
-
-    if selected_subtype:
-        products = products.filter(category__subtype=selected_subtype)
-
-    if query:
-        products = products.filter(
-            Q(name__icontains=query) | 
-            Q(description__icontains=query) |
-            Q(brand__icontains=query) |
-            Q(category__name__icontains=query) |
-            Q(category__subtype__icontains=query) 
-        )
-        color = color.filter(name__icontains=query)
-        size = size.filter(size__icontains=query)
-
-
-    if sort_option == 'name':
-        products = products.order_by('name')
-    elif sort_option == 'featured':
-        products = products.order_by('-rating')
-    elif sort_option == 'price':
-        products = products.order_by('-price')
+        if selected_subtype:
+            queryset = queryset.filter(category__subtype=selected_subtype)
         
-    products = products.prefetch_related('available_colors', 'images')
+        if query:
+            queryset = queryset.filter(
+                Q(name__icontains=query) | 
+                Q(description__icontains=query) |
+                Q(brand__icontains=query) |
+                Q(category__name__icontains=query) |
+                Q(category__subtype__icontains=query) 
+            )
 
-    context = {
-        'gender_categories': gender_categories,
-        'sale_categories': sale_categories,
-        'product_categories': product_categories,
-        'products': products,
-        'selected_subtype': selected_subtype,
-        'query': query,
-        'sort_option': sort_option,
-    }
-    
-    return render(request, 'shop.html', context)
+        if sort_option == 'name':
+            queryset = queryset.order_by('name')
+        elif sort_option == 'featured':
+            queryset = queryset.order_by('-rating')
+        elif sort_option == 'price':
+            queryset = queryset.order_by('-price')
+        
+        return queryset.prefetch_related('available_colors', 'images')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['gender_categories'] = Category.objects.filter(type='Gender')
+        context['sale_categories'] = Category.objects.filter(type='Sale')
+        context['product_categories'] = Category.objects.filter(type='Product')
+        context['selected_subtype'] = self.request.GET.get('subtype', '')
+        context['query'] = self.request.GET.get('q', '')
+        context['sort_option'] = self.request.GET.get('sort', '')
+        return context
 
+# Filter Products by Category
+class FilterProductsView(ListView):
+    model = Product
+    template_name = 'shop.html'
+    context_object_name = 'products'
 
-def filter_products(request, category_id):
-    products = Product.objects.filter(category__id=category_id)
-    
-    context = {
-        'products': products,
-        'category_id': category_id,
-    }
-    
-    return render(request, 'shop.html', context)
+    def get_queryset(self):
+        category_id = self.kwargs['category_id']
+        return Product.objects.filter(category__id=category_id)
 
-def filter_products_by_gender(request, gender):
-    products = Product.objects.filter(gender=gender)
-    context = {
-        'products': products,
-        'gender': gender,
-    }
-    return render(request, 'shop.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category_id'] = self.kwargs['category_id']
+        return context
 
-def product_detail(request, product_id):
-    product = get_object_or_404(Product, pk=product_id)
-    comments = product.comments.all()
-    form = CommentForm()
-    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:3]
+# Filter Products by Gender
+class FilterProductsByGenderView(ListView):
+    model = Product
+    template_name = 'shop.html'
+    context_object_name = 'products'
 
-    if request.method == 'POST':
+    def get_queryset(self):
+        gender = self.kwargs['gender']
+        return Product.objects.filter(gender=gender)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['gender'] = self.kwargs['gender']
+        return context
+
+# Product Detail View with Comments
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'shop-single.html'
+    context_object_name = 'product'
+    pk_url_kwarg = 'product_id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comments.all()
+        context['form'] = CommentForm()
+        context['related_products'] = Product.objects.filter(
+            category=self.object.category
+        ).exclude(id=self.object.id)[:3]
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
         form = CommentForm(request.POST)
         
         if form.is_valid():
             comment = form.save(commit=False)
             comment.user = request.user
-            comment.product = product  
+            comment.product = self.object
             comment.save()
             messages.success(request, 'Your comment has been added.')
-            
-            return redirect('main:product_detail', product_id=product_id)
+            return redirect('main:product_detail', product_id=self.object.id)
 
-    context = {
-        'product': product,
-        'comments': comments,
-        'form': form,
-        'related_products': related_products,
-    }
-
-    return render(request, 'shop-single.html', context)
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)

@@ -138,9 +138,92 @@
             </div>
         </div>
     </div>
+    
+</div>
+<div class="col-12">
+    <div class="pagination d-flex justify-content-center mt-5 mb-5">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="pagination-link rounded" aria-label="First Page">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link rounded" aria-label="Previous Page">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a href="?page={{ num }}" class="pagination-link active rounded">{{ num }}</a>
+            {% else %}
+                <a href="?page={{ num }}" class="pagination-link rounded">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-link rounded" aria-label="Next Page">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link rounded" aria-label="Last Page">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+        {% endif %}
+    </div>
 </div>
 
+
+
+
 <style>
+ /* Add margin-bottom to create space between pagination and footer */
+.pagination {
+    margin-bottom: 30px; /* Adjust as needed */
+}
+
+/* Styling for pagination */
+.pagination-link {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 0 4px;
+    font-size: 16px;
+    text-decoration: none;
+    color: #59AB6E;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.pagination-link:hover {
+    color: #fff;
+    background-color: #59AB6E;
+    border-color: #59AB6E;
+}
+
+.pagination-link.active {
+    color: #fff;
+    background-color: #59AB6E;
+    border-color: #59AB6E;
+    font-weight: bold;
+}
+
+.pagination-link:focus {
+    outline: none;
+}
+
+/* Icon styles for arrows */
+.fas {
+    font-size: 18px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .pagination-link {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+}
+
+
     .container {
         padding-top: 2rem;
     }
@@ -222,7 +305,7 @@
     }
 
     .card-body a:hover {
-        color: #007bff;
+        color: #59AB6E;
     }
 
     .card-body .text-muted {

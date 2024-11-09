@@ -2,13 +2,16 @@ from django.urls import path
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from .views import (
-    index,
-    about,
-    contact,
-    category_list,
-    product_detail,
-    filter_products,
-    filter_products_by_gender,
+    IndexView,
+    AboutView,
+    ContactView,
+    ShopView,
+    ShopSingleView,
+    CategoryListView,
+    ProductDetailView,
+    FilterProductsView,
+    FilterProductsByGenderView,
+    DeleteCommentView,
 )
 from . import views
 
@@ -19,15 +22,14 @@ def admin_logout(request):
     return redirect('/admin/login/')
 
 urlpatterns = [
-    path('', index, name='index'),
-    path('about/', about, name='about'),
-    path('contact/', contact, name='contact'),
-    path('shop/', category_list, name='shop'),
-    path('shop-single/<int:product_id>/', product_detail, name='shop_single'),
-    path('product/<int:product_id>/', product_detail, name='product_detail'),
-    path('filter/<int:category_id>/', filter_products, name='filter_products'),
-    path('shop/<str:gender>/', filter_products_by_gender, name='filter_products_by_gender'),
-    path('delete_comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),
+    path('', IndexView.as_view(), name='index'),  
+    path('about/', AboutView.as_view(), name='about'),  
+    path('contact/', ContactView.as_view(), name='contact'),  
+    path('shop/', ShopView.as_view(), name='shop'),  
+    path('shop-single/<int:product_id>/', ShopSingleView.as_view(), name='shop_single'),  
+    path('product/<int:product_id>/', ProductDetailView.as_view(), name='product_detail'),  
+    path('filter/<int:category_id>/', FilterProductsView.as_view(), name='filter_products'),  
+    path('shop/<str:gender>/', FilterProductsByGenderView.as_view(), name='filter_products_by_gender'),  
+    path('delete_comment/<int:pk>/', DeleteCommentView.as_view(), name='delete_comment'),  
     path('admin-logout/', admin_logout, name='admin_logout'),
-    
 ]
