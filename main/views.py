@@ -1,3 +1,4 @@
+from django.contrib.auth import logout
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -6,12 +7,15 @@ from .forms import CommentForm, ProductForm, CustomerForm
 from django.contrib import messages
 from django.contrib.auth.models import User
 
-@login_required
+@login_required(login_url='/admin/login/')
 def index(request):
     comments = Comment.objects.all()  
     form = CommentForm()
 
     if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('/admin/login/')
+
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
@@ -30,6 +34,12 @@ def index(request):
         'form': form,
     }
     return render(request, 'index.html', context)
+
+
+def admin_logout(request):
+    logout(request)   
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('/admin/login/')
 
 @login_required
 def delete_comment(request, comment_id):

@@ -1,4 +1,6 @@
 from django.urls import path
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 from .views import (
     index,
     about,
@@ -12,6 +14,9 @@ from . import views
 
 app_name = 'main'
 
+def admin_logout(request):
+    logout(request)
+    return redirect('/admin/login/')
 
 urlpatterns = [
     path('', index, name='index'),
@@ -23,5 +28,6 @@ urlpatterns = [
     path('filter/<int:category_id>/', filter_products, name='filter_products'),
     path('shop/<str:gender>/', filter_products_by_gender, name='filter_products_by_gender'),
     path('delete_comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),
+    path('admin-logout/', admin_logout, name='admin_logout'),
     
 ]

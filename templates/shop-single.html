@@ -55,7 +55,8 @@
                         <ul class="pt-2">
                             {% if product.available_colors.all %}
                             {% for color in product.available_colors.all %}
-                            <span class="badge badge-color-{{ color.name|lower }}">{{ color.name }}</span>
+                            <span class="badge badge-color-{{ color.name|lower }}" data-toggle="tooltip"
+                                title="{{ color.name }}">{{ color.name }}</span>
                             {% endfor %}
                             {% else %}
                             <p class="text-muted"><strong>No colors available</strong></p>
@@ -220,7 +221,7 @@
                     </div>
     
                     {% if comment.user == request.user %}
-                        <a href="{% url 'main:delete_comment' comment.id %}" class="btn btn-danger btn-sm mt-2">Delete</a>
+                        <a href="{% url 'main:delete_comment' comment.id %}" class="btn-delete btn btn-danger ">Delete</a>
                     {% endif %}
                 </div>
             {% empty %}
@@ -263,7 +264,7 @@
         <input type="hidden" name="product_id" value="{{ product.id }}">
 
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-success w-100">Submit</button>
+        <button type="submit" class="btn-submit btn-success w-100">Submit</button>
     </form>
 </div>
 
@@ -320,21 +321,36 @@ textarea.form-control {
 }
 
 /* Button Styling */
-.btn {
+.btn-submit {
     font-size: 1.1rem;
     font-weight: 600;
     padding: 12px 20px;
     border-radius: 0.5rem;
-    background-color: #28a745;
     color: white;
     border: none;
     transition: background-color 0.3s ease, transform 0.2s ease;
     cursor: pointer;
 }
+.btn-delete {
+    font-size: 1.3rem;
+    font-weight: 800;
+    padding: 10px 15px;
+    border-radius: 0.5rem;
+    color: rgb(255, 0, 0);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    background-color: white;
+    border-color: red;
+    border-width: 2px;
+}
 
-.btn:hover {
-    background-color: #218838;
+.btn-delete:hover {
     transform: translateY(-2px);
+
+}
+.btn-submit:hover {
+    background-color: rgb(red, green, blue);
+    transform: translateY(-5px);
 }
 
 .btn:active {
@@ -437,7 +453,6 @@ textarea.form-control {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .feedback-section {
         padding: 2rem 1rem;
@@ -455,8 +470,54 @@ textarea.form-control {
         margin-bottom: 1rem;
     }
 }
+.badge {
+        margin: 4px;
+        padding: 7px 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
 
+    .badge-color-red {
+        background-color: #f8d7da;
+        color: #d9534f;
+    }
+
+    .badge-color-green {
+        background-color: #d4edda;
+        color: #28a745;
+    }
+
+    .badge-color-blue {
+        background-color: #d1ecf1;
+        color: #17a2b8;
+    }
+
+    .badge-color-yellow {
+        background-color: #fff3cd;
+        color: #ffc107;
+    }
+
+    .badge-color-black {
+        background-color: #e2e3e5;
+        color: #343a40;
+    }
+
+    .badge-color-white {
+        background-color: #f8f9fa;
+        color: #6c757d;
+    }
+
+    .badge-color-colorful {
+        background: linear-gradient(45deg, #ff7f50, #ff69b4, #1e90ff, #32cd32, #ffd700);
+        color: white;
+        padding: 8px 15px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
 </style>
+
 {% block script %}
 {% endblock %}
 
