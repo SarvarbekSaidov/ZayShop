@@ -107,7 +107,7 @@ class ShopView(ListView):
                 Q(name__icontains=query) | 
                 Q(description__icontains=query) | 
                 Q(price__icontains=query) | 
-                Q(available_colors__name__icontains=query) | 
+                Q(available_colors__name__icontains=query)  | 
                 Q(category__name__icontains=query) | 
                 Q(specifications__icontains=query) | 
                 Q(brand__icontains=query)
