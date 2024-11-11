@@ -6,7 +6,7 @@
   <form method="POST" class="form gap-20">
     {% csrf_token %}
     <input placeholder="Enter your username" class="input" type="text" name="username" required>
-    <input placeholder="*********" class="input" type="password" name="password" required>
+    <input placeholder="password" class="input" type="password" name="password" required>
     <button type="submit" class="sbmt">Log In</button>
 
     {% if error %}
